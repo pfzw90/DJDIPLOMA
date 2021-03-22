@@ -1,4 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import permission_classes
 from rest_framework.viewsets import ModelViewSet
@@ -13,9 +14,10 @@ class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend,filters.SearchFilter, filters.OrderingFilter]
     filterset_class = ProductFilter
-    filterset_fields = ['price', 'name', 'description']
+    ordering_fields = ['price']
+    filterset_fields = ['name', 'description']
 
     def get_permissions(self):
         if self.action in ["create", "update", "partial_update"]:

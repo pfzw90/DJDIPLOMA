@@ -1,21 +1,16 @@
 from django_filters import rest_framework as filters
 
-from shop.models import Order, Collection, ProductReview, Product
+from shop.models import Order, ProductReview, Product
 
 
 class ProductFilter(filters.FilterSet):
-    # name
-    # description
-
-    order = filters.OrderingFilter(
-        fields=(
-            ('price')
-        )
-    )
 
     class Meta:
         model = Product
-        fields = ['price', 'name', 'description']
+        fields = {
+            'name': ['contains'],
+            'description': ['contains']
+        }
 
 
 class ReviewFilter(filters.FilterSet):
