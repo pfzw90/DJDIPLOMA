@@ -14,7 +14,7 @@ class ProductFilter(filters.FilterSet):
 
 
 class ReviewFilter(filters.FilterSet):
-    creator = filters.NumberFilter(field_name='user_id')
+    creator = filters.Filter(field_name='user_id')
     id = filters.NumberFilter(field_name='id')
     created_at = filters.DateFromToRangeFilter(field_name='created_at')
 
@@ -26,10 +26,7 @@ class ReviewFilter(filters.FilterSet):
 
 class OrderFilter(filters.FilterSet):
 
-    #products
-
-    total = filters.NumberFilter(field_name='total')
-    status = filters.ChoiceFilter(field_name='status')
+    total = filters.RangeFilter(field_name='total')
     created_at = filters.DateFromToRangeFilter(field_name='created_at')
     updated_at = filters.DateFromToRangeFilter(field_name='updated_at')
 

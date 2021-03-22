@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from shop.models import Product, ProductReview, \
-    Order, ProductsOrders, Collection, ReviewStarsChoices, OrderStatusChoices
+    Order, ProductsOrders, Collection
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -29,7 +29,7 @@ class ProductReviewSerializer(serializers.ModelSerializer):
     user = UserSerializer(
         read_only=True
     )
-    stars = serializers.ChoiceField(ReviewStarsChoices)
+    stars = serializers.ChoiceField(choices=ProductReview.ReviewStarsChoices)
     product_id = serializers.PrimaryKeyRelatedField
 
     class Meta:
@@ -64,7 +64,7 @@ class OrderSerializer(serializers.ModelSerializer):
     user = UserSerializer(
         read_only=True
     )
-    status = serializers.ChoiceField(OrderStatusChoices, default='NEW')
+    status = serializers.ChoiceField(Order.OrderStatusChoices, default='NEW')
     products = ProductsOrdersSerializer(source='orders', many=True)
 
     def create(self, validated_data):

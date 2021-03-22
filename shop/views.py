@@ -14,7 +14,7 @@ class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-    filter_backends = [DjangoFilterBackend,filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_class = ProductFilter
     ordering_fields = ['price']
     filterset_fields = ['name', 'description']
@@ -25,28 +25,33 @@ class ProductViewSet(ModelViewSet):
         return []
 
 
-
 @permission_classes([OnlyOwnerCanSee, IsAuthenticated])
 class OrderViewSet(ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_class = OrderFilter
-    filterset_fields = ['products', 'total', 'created_at', 'updated_at', 'status']
+    ordering_fields = ['total', 'status']
+
+    # def get_permissions(self):
+    #     return [OnlyOwnerCanSee(), IsAuthenticated()]
 
     def get_permissions(self):
-        return [OnlyOwnerCanSee(), IsAuthenticated()]
+        if self.action in ["create", "update", "partial_update"]:
+            return [OnlyAdminCanEdit(), IsAuthenticated()]
+        return []
 
 
-@permission_classes([OnlyOwnerCanEdit, IsAuthenticated, AllowAny])
+@permission_classes([OnlyOwnerCanEdit, IsAuthenticated])
 class ReviewViewSet(ModelViewSet):
     queryset = ProductReview.objects.all()
     serializer_class = ProductReviewSerializer
 
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_class = ReviewFilter
     filterset_fields = ['user_id', 'created_at', 'id']
+    ordering_fields = ['created_at']
 
     def get_permissions(self):
         if self.action in ["create", "update", "partial_update"]:
@@ -54,11 +59,10 @@ class ReviewViewSet(ModelViewSet):
         return []
 
 
-
-@permission_classes([OnlyAdminCanEdit, AllowAny])
+@permission_classes([OnlyAdminCanEdit])
 class CollectionViewSet(ModelViewSet):
     queryset = Collection.objects.all()
-    serializer_class=CollectionSerializer
+    serializer_class = CollectionSerializer
 
     def get_permissions(self):
         if self.action in ["create", "update", "partial_update"]:
