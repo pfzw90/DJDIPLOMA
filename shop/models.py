@@ -32,14 +32,18 @@ class ProductReview(Basic):
     )
     product_id = models.ForeignKey('Product', related_name='reviews', on_delete=models.CASCADE)
     stars = models.IntegerField(choices=ReviewStarsChoices.choices, default=3, verbose_name='Оценка')
+    text = models.TextField(max_length=5000)
 
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['user', 'product_id'], name='One review for each product')
         ]
 
+    def __str__(self):
+        return f'Отзыв пользователя {self.user} на товар \"{self.product_id.name}\"'
 
 class Order(Basic):
+    
     class OrderStatusChoices(models.TextChoices):
         NEW = "NEW", "Новый"
         IN_PROGRESS = "IN PROGRESS", "Выполняется"
@@ -50,17 +54,23 @@ class Order(Basic):
         on_delete=models.CASCADE,
     )
     status = models.TextField(choices=OrderStatusChoices.choices)
-    total = models.DecimalField(max_digits=1000, decimal_places=2)
-    products = models.ManyToManyField('Product', related_name='orders', through='ProductsOrders')
+    total = models.DecimalField(max_digits=1000, decimal_places=2, editable=False)
+    products = models.ForeignKey('ProductsOrders', on_delete=models.CASCADE, related_name='products')
+
+    def __str__(self):
+        return f'{self.id}'
 
 
 class ProductsOrders(models.Model):
-    order = models.ForeignKey('Order', on_delete=models.CASCADE)
-    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(blank=False)
 
 
 class Collection(Basic):
-    heading = models.TextField
-    text = models.TextField
+    heading = models.TextField(verbose_name='Заголовок')
+    text = models.TextField(verbose_name='Описание')
     products = models.ManyToManyField('Product', related_name='collections')
+
+    def __str__(self):
+        return f'{self.heading}'

@@ -18,7 +18,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('id','name', 'description', 'price',
+        fields = ('id', 'name', 'description', 'price',
                   'created_at', 'updated_at')
 
     def validate(self, data):
@@ -65,7 +65,7 @@ class OrderSerializer(serializers.ModelSerializer):
         read_only=True
     )
     status = serializers.ChoiceField(Order.OrderStatusChoices, default='NEW')
-    products = ProductsOrdersSerializer(source='orders', many=True)
+    products = ProductsOrdersSerializer(source="productsorders_set", many=True)
 
     def create(self, validated_data):
         validated_data["total"] = 0
@@ -81,7 +81,8 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ('user', 'status', 'products', 'total')
+        depth = 2
+        fields = ['user', 'status', 'products', 'total']
 
 
 class CollectionSerializer(serializers.ModelSerializer):
