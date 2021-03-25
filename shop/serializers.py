@@ -74,6 +74,7 @@ class OrderSerializer(serializers.ModelSerializer):
         validated_data['user'] = self.context['request'].user
         validated_data['total'] = 0
         products_data = validated_data.pop('order_products')
+        print(products_data)
         order = Order.objects.create(**validated_data)
         for product_data in products_data:
             product = Product.objects.get(id=product_data.get('product'))
