@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
@@ -51,9 +53,9 @@ class ProductReviewSerializer(serializers.ModelSerializer):
 
 
 class ProductsOrdersSerializer(serializers.ModelSerializer):
-    order = serializers.ReadOnlyField(source='order.id')
-    product = serializers.ReadOnlyField(source='product.id')
-    quantity = serializers.IntegerField
+    order = serializers.PrimaryKeyRelatedField(source='order.id', read_only=True)
+    product = serializers.PrimaryKeyRelatedField(source='product.id', read_only=True)
+    quantity = serializers.IntegerField()
 
     class Meta:
         model = ProductsOrders
@@ -65,24 +67,30 @@ class OrderSerializer(serializers.ModelSerializer):
         read_only=True
     )
     status = serializers.ChoiceField(Order.OrderStatusChoices, default='NEW')
-    products = ProductsOrdersSerializer(source="productsorders_set", many=True)
+    order_products = ProductsOrdersSerializer(many=True)
 
     def create(self, validated_data):
-        validated_data["total"] = 0
-        for p in self.context["request"].data.get('products'):
-            validated_data["total"] += Product.objects.get(id=p.product).get['price'] * p.quantity
-
-        return super().create(validated_data)
+        print(validated_data)
+        validated_data['user'] = self.context['request'].user
+        validated_data['total'] = 0
+        products_data = validated_data.pop('order_products')
+        order = Order.objects.create(**validated_data)
+        for product_data in products_data:
+            product = Product.objects.get(id=product_data.get('product'))
+            quantity = product_data.get('quantity')
+            ProductsOrders.objects.create(order=order, product=product, quantity=quantity)
+            order.total += product.price * quantity
+        return order
 
     def validate(self, data):
         request = self.context['request']
-        if not request.user.get('is_admin') and (request.data.get('status') != 'NEW'):
+        if not request.user.is_staff and (request.data['status'] != 'NEW'):
             raise serializers.ValidationError('Менять статус заказа могут только администраторы')
+        return data
 
     class Meta:
         model = Order
-        depth = 2
-        fields = ['user', 'status', 'products', 'total']
+        fields = ['id', 'user', 'status', 'order_products', 'total']
 
 
 class CollectionSerializer(serializers.ModelSerializer):

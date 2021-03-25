@@ -13,7 +13,7 @@ class Basic(models.Model):
 class Product(Basic):
     name = models.TextField(verbose_name='Название товара')
     description = models.TextField(verbose_name='Описание товара')
-    price = models.DecimalField(max_digits=200, decimal_places=2, verbose_name='Цена')
+    price = models.IntegerField()
 
     def __str__(self):
         return self.name
@@ -43,7 +43,7 @@ class ProductReview(Basic):
         return f'Отзыв пользователя {self.user} на товар \"{self.product_id.name}\"'
 
 class Order(Basic):
-    
+
     class OrderStatusChoices(models.TextChoices):
         NEW = "NEW", "Новый"
         IN_PROGRESS = "IN PROGRESS", "Выполняется"
@@ -55,14 +55,12 @@ class Order(Basic):
     )
     status = models.TextField(choices=OrderStatusChoices.choices)
     total = models.DecimalField(max_digits=1000, decimal_places=2, editable=False)
-    products = models.ForeignKey('ProductsOrders', on_delete=models.CASCADE, related_name='products')
 
-    def __str__(self):
-        return f'{self.id}'
+
 
 
 class ProductsOrders(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_products')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(blank=False)
 
