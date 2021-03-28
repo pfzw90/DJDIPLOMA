@@ -53,9 +53,6 @@ class ProductReviewSerializer(serializers.ModelSerializer):
 
 
 class ProductsOrdersSerializer(serializers.ModelSerializer):
-    order = serializers.PrimaryKeyRelatedField(source='order.id', read_only=True)
-    product = serializers.PrimaryKeyRelatedField(source='product.id', read_only=True)
-    quantity = serializers.IntegerField()
 
     class Meta:
         model = ProductsOrders
@@ -69,18 +66,36 @@ class OrderSerializer(serializers.ModelSerializer):
     status = serializers.ChoiceField(Order.OrderStatusChoices, default='NEW')
     order_products = ProductsOrdersSerializer(many=True)
 
+    @staticmethod
+    def create_new_products_orders(obj, data):
+        for product in data:
+            ProductsOrders.objects.create(order=obj, **product)
+            obj.total += Product.objects.get(id=product.get('product').id).price * product.get('quantity')
+
+
     def create(self, validated_data):
-        print(validated_data)
         validated_data['user'] = self.context['request'].user
-        validated_data['total'] = 0
         products_data = validated_data.pop('order_products')
-        print(products_data)
         order = Order.objects.create(**validated_data)
-        for product_data in products_data:
-            product = Product.objects.get(id=product_data.get('product'))
-            quantity = product_data.get('quantity')
-            ProductsOrders.objects.create(order=order, product=product, quantity=quantity)
-            order.total += product.price * quantity
+
+        self.create_new_products_orders(order, products_data)
+
+        order.save()
+        return order
+
+    def update(self, order, validated_data):
+
+        if 'order_products' in validated_data:
+            products_data = validated_data.pop('order_products')
+
+            if list(order.order_products.all()):
+                for p in list(order.order_products.all()):
+                    ProductsOrders.objects.get(order=order, product=p.product).delete()
+
+            self.create_new_productsorders(order, products_data)
+
+        order.status = validated_data.pop('status')
+        order.save()
         return order
 
     def validate(self, data):

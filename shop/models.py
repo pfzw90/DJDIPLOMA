@@ -18,6 +18,7 @@ class Product(Basic):
     def __str__(self):
         return self.name
 
+
 class ProductReview(Basic):
     class ReviewStarsChoices(models.IntegerChoices):
         AWFUL = 1
@@ -42,8 +43,8 @@ class ProductReview(Basic):
     def __str__(self):
         return f'Отзыв пользователя {self.user} на товар \"{self.product_id.name}\"'
 
-class Order(Basic):
 
+class Order(Basic):
     class OrderStatusChoices(models.TextChoices):
         NEW = "NEW", "Новый"
         IN_PROGRESS = "IN PROGRESS", "Выполняется"
@@ -52,15 +53,18 @@ class Order(Basic):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
+        verbose_name='Пользователь'
     )
-    status = models.TextField(choices=OrderStatusChoices.choices)
-    total = models.DecimalField(max_digits=1000, decimal_places=2, editable=False)
+    status = models.TextField(choices=OrderStatusChoices.choices, verbose_name='Статус')
+    total = models.IntegerField(default=0, editable=False, verbose_name='Сумма')
+    order_products = models.prefetch_related_objects('ProductsOrders')
 
-
+    def __str__(self):
+        return f'Заказ №{self.id} от {self.created_at.strftime("%m/%d/%Y")}'
 
 
 class ProductsOrders(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_products')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_products', blank=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(blank=False)
 
