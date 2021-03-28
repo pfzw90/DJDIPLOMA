@@ -4,12 +4,12 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.decorators import permission_classes
 from rest_framework.viewsets import ModelViewSet
 from shop.models import Product, Order, ProductReview, Collection
-from shop.permissions import OnlyOwnerCanEdit, OnlyOwnerCanSee, OnlyAdminCanEdit
+from shop.permissions import OnlyAdminCanEdit, OnlyOwnerCanEdit
 from shop.serializers import ProductSerializer, OrderSerializer, ProductReviewSerializer, CollectionSerializer
 from shop.filters import OrderFilter, ReviewFilter, ProductFilter
 
 
-@permission_classes([OnlyAdminCanEdit, AllowAny])
+@permission_classes([OnlyAdminCanEdit, IsAuthenticated])
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -25,27 +25,28 @@ class ProductViewSet(ModelViewSet):
         return []
 
 
-@permission_classes([OnlyOwnerCanSee, IsAuthenticated])
+@permission_classes([IsAuthenticated])
 class OrderViewSet(ModelViewSet):
-    queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_class = OrderFilter
     ordering_fields = ['total', 'status']
 
-    # def get_permissions(self):
-    #     return [OnlyOwnerCanSee(), IsAuthenticated()]
-
     def get_permissions(self):
         if self.action in ["create", "update", "partial_update"]:
-            return [OnlyAdminCanEdit(), IsAuthenticated()]
+            return [IsAuthenticated()]
         return []
 
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Order.objects.all()
+        else:
+            return Order.objects.filter(user=self.request.user)
 
-@permission_classes([OnlyOwnerCanEdit, IsAuthenticated])
+
+@permission_classes([IsAuthenticated, OnlyOwnerCanEdit])
 class ReviewViewSet(ModelViewSet):
-    queryset = ProductReview.objects.all()
     serializer_class = ProductReviewSerializer
 
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
@@ -55,7 +56,7 @@ class ReviewViewSet(ModelViewSet):
 
     def get_permissions(self):
         if self.action in ["create", "update", "partial_update"]:
-            return [OnlyOwnerCanEdit(), IsAuthenticated()]
+            return [IsAuthenticated(), OnlyOwnerCanEdit()]
         return []
 
 
