@@ -47,6 +47,7 @@ class OrderViewSet(ModelViewSet):
 
 @permission_classes([IsAuthenticated, OnlyOwnerCanEdit])
 class ReviewViewSet(ModelViewSet):
+    queryset = ProductReview.objects.all()
     serializer_class = ProductReviewSerializer
 
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
