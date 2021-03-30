@@ -53,7 +53,6 @@ class ProductReviewSerializer(serializers.ModelSerializer):
 
 
 class ProductsOrdersSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = ProductsOrders
         fields = ('order', 'product', 'quantity')
@@ -72,7 +71,6 @@ class OrderSerializer(serializers.ModelSerializer):
             ProductsOrders.objects.create(order=obj, **product)
             obj.total += Product.objects.get(id=product.get('product').id).price * product.get('quantity')
 
-
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
         products_data = validated_data.pop('order_products')
@@ -84,7 +82,6 @@ class OrderSerializer(serializers.ModelSerializer):
         return order
 
     def update(self, order, validated_data):
-
         if 'order_products' in validated_data:
             products_data = validated_data.pop('order_products')
 
@@ -92,7 +89,7 @@ class OrderSerializer(serializers.ModelSerializer):
                 for p in list(order.order_products.all()):
                     ProductsOrders.objects.get(order=order, product=p.product).delete()
 
-            self.create_new_productsorders(order, products_data)
+            self.create_new_products_orders(order, products_data)
 
         order.status = validated_data.pop('status')
         order.save()
