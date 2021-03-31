@@ -21,11 +21,11 @@ class Product(Basic):
 
 class ProductReview(Basic):
     class ReviewStarsChoices(models.IntegerChoices):
-        AWFUL = 1
-        BAD = 2
-        PASSABLY = 3
-        GOOD = 4
-        EXCELLENT = 5
+        AWFUL = 1, "Ужасно"
+        BAD = 2, "Плохо"
+        PASSABLY = 3, "Нормально"
+        GOOD = 4, "Хорошо"
+        EXCELLENT = 5, "Отлично"
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -49,7 +49,7 @@ class Order(Basic):
     class OrderStatusChoices(models.TextChoices):
         NEW = "NEW", "Новый"
         IN_PROGRESS = "IN PROGRESS", "Выполняется"
-        GONE = "FINISHED", "Завершен"
+        DONE = "FINISHED", "Завершен"
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -57,7 +57,7 @@ class Order(Basic):
         verbose_name='Пользователь'
     )
     status = models.TextField(choices=OrderStatusChoices.choices, verbose_name='Статус')
-    total = models.IntegerField(default=0, verbose_name='Сумма')
+    total = models.PositiveIntegerField(blank=True, null=True)
 
     def __str__(self):
         return f'Заказ №{self.id} от {self.created_at.strftime("%m/%d/%Y")}'

@@ -67,6 +67,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def create_new_products_orders(obj, data):
+        obj.total = 0
         for product in data:
             ProductsOrders.objects.create(order=obj, **product)
             obj.total += Product.objects.get(id=product.get('product').id).price * product.get('quantity')
