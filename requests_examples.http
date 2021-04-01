@@ -1,0 +1,68 @@
+# Получение списка продуктов, отзывов, коллекций, заказов
+
+###
+GET http://localhost:8000/api/products/
+###
+GET http://localhost:8000/api/reviews/
+###
+GET http://localhost:8000/api/collections
+###
+GET http://localhost:8000/api/orders/
+Authorization: Token 00b34e083af759bfad0f34932810d0401433d413
+
+
+# ФИЛЬТРЫ
+
+# Фильтр заказов по товару
+###
+GET http://localhost:8000/api/orders/?order_products=11
+Authorization: Token 54926bbd1248f690efdd8f7372ce7e1b64a8ea79
+Content-Type: application/json
+
+
+
+
+# PATCH  http://localhost:8000/api/reviews/3/
+# Authorization: Token 00b34e083af759bfad0f34932810d0401433d413
+# Content-Type: application/json
+
+# {
+#   "stars": 2,
+#   "product_id": 12,
+#   "text": "Пробовал сварить сосиску, но оболочка расплавилась и повредила нагревательный элемент. Чайник говно, не стоит своих денег."
+# }
+# ###
+
+
+
+# GET http://localhost:8000/api/orders/?status=FINISHED
+# Authorization: Token 00b34e083af759bfad0f34932810d0401433d413
+# ###
+# POST http://localhost:8000/api/orders/
+# Content-Type: application/json
+# Authorization: Token 00b34e083af759bfad0f34932810d0401433d413
+
+# {
+#   "order_products": [
+#       {
+#       "quantity": 10,
+#       "product": 11
+#       },
+#       {
+#         "quantity" : 15,
+#         "product" : 10
+#       }
+#   ],
+#   "status" : "NEW"
+  
+# }
+
+# ###
+# PATCH http://localhost:8000/api/orders/208/
+# Content-Type: application/json
+# Authorization: Token 54926bbd1248f690efdd8f7372ce7e1b64a8ea79
+
+# {
+#   "status" : "FINISHED"
+
+# }

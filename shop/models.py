@@ -64,8 +64,8 @@ class Order(Basic):
 
 
 class ProductsOrders(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_products', blank=True, verbose_name=
-                            'Заказ')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_products',
+                              blank=True, verbose_name='Заказ')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Товар')
     quantity = models.IntegerField(blank=False, verbose_name='Количество')
 

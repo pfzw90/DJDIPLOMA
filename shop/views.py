@@ -34,9 +34,8 @@ class OrderViewSet(ModelViewSet):
     ordering_fields = ['total', 'status']
 
     def get_permissions(self):
-        if self.action in ["create", "update", "partial_update"]:
-            return [IsAuthenticated()]
-        return []
+        return [IsAuthenticated()]
+
 
     def get_queryset(self):
         if self.request.user.is_staff:

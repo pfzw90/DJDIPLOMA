@@ -1,7 +1,16 @@
 import django_filters
+from django_filters import fields
 from django_filters import rest_framework as filters
 
 from shop.models import Order, ProductReview, Product, ProductsOrders
+
+
+def order_products(request):
+    if request is None:
+        return Order.objects.none()
+
+    return ProductsOrders.objects.filter(product_id=request.order_products)
+
 
 
 class ProductFilter(filters.FilterSet):
@@ -9,7 +18,7 @@ class ProductFilter(filters.FilterSet):
         model = Product
         fields = {
             'name': ['contains'],
-            'description': ['contains']
+            'description': ['contains'],
         }
 
 
@@ -27,7 +36,9 @@ class OrderFilter(filters.FilterSet):
     total = filters.RangeFilter(field_name='total')
     created_at = filters.DateFromToRangeFilter(field_name='created_at')
     updated_at = filters.DateFromToRangeFilter(field_name='updated_at')
-    order_products = filters.ModelChoiceFilter(queryset=ProductsOrders.objects.all(), to_field_name='product_id')
+    
+    order_products = filters.ModelMultipleChoiceFilter(to_field_name='product_id',
+                                                       queryset=ProductsOrders.objects.all())
 
     class Meta:
         model = Order
