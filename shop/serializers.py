@@ -62,7 +62,7 @@ class OrderSerializer(serializers.ModelSerializer):
     user = UserSerializer(
         read_only=True
     )
-    status = serializers.ChoiceField(Order.OrderStatusChoices, default='NEW')
+    status = serializers.ChoiceField(Order.OrderStatusChoices, default='NEW', required=False, allow_blank=True)
     order_products = ProductsOrdersSerializer(many=True)
 
     @staticmethod
@@ -98,7 +98,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         request = self.context['request']
-        if not request.user.is_staff and (request.data['status'] != 'NEW'):
+        if not request.user.is_staff and request.data.get('status') and request.data.get('status') != 'NEW':
             raise serializers.ValidationError('Менять статус заказа могут только администраторы')
         return data
 

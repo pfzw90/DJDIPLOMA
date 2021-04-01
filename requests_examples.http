@@ -11,58 +11,101 @@ GET http://localhost:8000/api/orders/
 Authorization: Token 00b34e083af759bfad0f34932810d0401433d413
 
 
-# ФИЛЬТРЫ
+# ФИЛЬТРЫ И СОРТИРОВКА
 
 # Фильтр заказов по товару
 ###
-GET http://localhost:8000/api/orders/?order_products=11
+GET http://localhost:8000/api/orders/?product_id=11
+Authorization: Token 54926bbd1248f690efdd8f7372ce7e1b64a8ea79
+Content-Type: application/json
+
+# Фильтр отзывов по пользователю
+###
+GET http://localhost:8000/api/reviews/?user_id=1
+Content-Type: application/json
+
+# Поиск товаров по названию
+###
+GET http://localhost:8000/api/products/?name=электро
+Content-Type: application/json
+
+
+# Сорировка заказов по статусу
+###
+GET http://localhost:8000/api/orders/?ordering=status
 Authorization: Token 54926bbd1248f690efdd8f7372ce7e1b64a8ea79
 Content-Type: application/json
 
 
 
+# СОЗДАНИЕ И ИЗМЕНЕНИЕ
 
-# PATCH  http://localhost:8000/api/reviews/3/
-# Authorization: Token 00b34e083af759bfad0f34932810d0401433d413
-# Content-Type: application/json
+# Создание нового продукта
+###
+POST http://localhost:8000/api/products/
+Content-Type: application/json
+Authorization: Token 54926bbd1248f690efdd8f7372ce7e1b64a8ea79
 
-# {
-#   "stars": 2,
-#   "product_id": 12,
-#   "text": "Пробовал сварить сосиску, но оболочка расплавилась и повредила нагревательный элемент. Чайник говно, не стоит своих денег."
-# }
-# ###
+{
+    "name" : "Пламягаситель neGORI-popa3001",
+    "description" : "Отличное средство для тех, у кого не получаеся освоить Django",
+    "price": 40000
+}
 
 
+# Создание нового заказа
+###
+POST http://localhost:8000/api/orders/
+Content-Type: application/json
+Authorization: Token 00b34e083af759bfad0f34932810d0401433d413
 
-# GET http://localhost:8000/api/orders/?status=FINISHED
-# Authorization: Token 00b34e083af759bfad0f34932810d0401433d413
-# ###
-# POST http://localhost:8000/api/orders/
-# Content-Type: application/json
-# Authorization: Token 00b34e083af759bfad0f34932810d0401433d413
+{
+    "order_products":
+    [
+        {
+            "product" : 13,
+            "quantity" : 1
+        }
+    ]
+}
 
-# {
-#   "order_products": [
-#       {
-#       "quantity": 10,
-#       "product": 11
-#       },
-#       {
-#         "quantity" : 15,
-#         "product" : 10
-#       }
-#   ],
-#   "status" : "NEW"
-  
-# }
+# Изменение состава заказа
+###
+PATCH http://localhost:8000/api/orders/209/
+Content-Type: application/json
+Authorization: Token 54926bbd1248f690efdd8f7372ce7e1b64a8ea79
 
-# ###
-# PATCH http://localhost:8000/api/orders/208/
-# Content-Type: application/json
-# Authorization: Token 54926bbd1248f690efdd8f7372ce7e1b64a8ea79
+{
+  "order_products": [
+      {
+      "quantity": 10,
+      "product": 11
+      },
+      {
+        "quantity" : 2,
+        "product" : 13
+      }
+  ]  
+}
 
-# {
-#   "status" : "FINISHED"
+# Попытка поменять статус заказа
+###
+PATCH http://localhost:8000/api/orders/209/
+Content-Type: application/json
+Authorization: Token 00b34e083af759bfad0f34932810d0401433d413
 
-# }
+{
+    "status" : "IN PROGRESS"
+}
+
+# Добавление отзыва на товар (при повторном добавлении выдает ошибку)
+### 
+POST http://localhost:8000/api/reviews/
+Content-Type: application/json
+Authorization: Token 00b34e083af759bfad0f34932810d0401433d413
+
+{
+    "product_id": 13,
+    "text": "Спасибо тебе, Наташа, за классный товар. Умнее я не стал, но припекать перестало.",
+    "stars": 5
+}
