@@ -15,7 +15,7 @@ Authorization: Token 00b34e083af759bfad0f34932810d0401433d413
 
 # Фильтр заказов по товару
 ###
-GET http://localhost:8000/api/orders/?product_id=11
+GET http://localhost:8000/api/orders/?products=10
 Authorization: Token 54926bbd1248f690efdd8f7372ce7e1b64a8ea79
 Content-Type: application/json
 
@@ -26,7 +26,7 @@ Content-Type: application/json
 
 # Поиск товаров по названию
 ###
-GET http://localhost:8000/api/products/?name=электро
+GET http://localhost:8000/api/products/?name=элек
 Content-Type: application/json
 
 
@@ -44,7 +44,7 @@ Content-Type: application/json
 ###
 POST http://localhost:8000/api/products/
 Content-Type: application/json
-Authorization: Token 54926bbd1248f690efdd8f7372ce7e1b64a8ea79
+Authorization: Token 00b34e083af759bfad0f34932810d0401433d413
 
 {
     "name" : "Пламягаситель neGORI-popa3001",
@@ -57,13 +57,13 @@ Authorization: Token 54926bbd1248f690efdd8f7372ce7e1b64a8ea79
 ###
 POST http://localhost:8000/api/orders/
 Content-Type: application/json
-Authorization: Token 00b34e083af759bfad0f34932810d0401433d413
+Authorization: Token 54926bbd1248f690efdd8f7372ce7e1b64a8ea79
 
 {
     "order_products":
     [
         {
-            "product" : 13,
+            "product" : 14,
             "quantity" : 1
         }
     ]
@@ -71,9 +71,9 @@ Authorization: Token 00b34e083af759bfad0f34932810d0401433d413
 
 # Изменение состава заказа
 ###
-PATCH http://localhost:8000/api/orders/209/
+PATCH http://localhost:8000/api/orders/212/
 Content-Type: application/json
-Authorization: Token 54926bbd1248f690efdd8f7372ce7e1b64a8ea79
+Authorization: Token 00b34e083af759bfad0f34932810d0401433d413
 
 {
   "order_products": [
@@ -83,7 +83,7 @@ Authorization: Token 54926bbd1248f690efdd8f7372ce7e1b64a8ea79
       },
       {
         "quantity" : 2,
-        "product" : 13
+        "product" : 14
       }
   ]  
 }
@@ -105,7 +105,32 @@ Content-Type: application/json
 Authorization: Token 00b34e083af759bfad0f34932810d0401433d413
 
 {
-    "product_id": 13,
+    "product_id": 16,
+    "text": "Спасибо тебе, Наташа, за классный товар. Умнее я не стал, но припекать перестало.",
+    "stars": 5
+}
+
+# Попытка поменять чужой отзыв
+### 
+PATCH  http://localhost:8000/api/reviews/5/
+Content-Type: application/json
+Authorization: Token 00b34e083af759bfad0f34932810d0401433d413
+
+{
+    "product_id": 16,
+    "text": "Спасибо тебе, Наташа, за классный товар. Умнее я не стал, но припекать перестало.",
+    "stars": 5
+}
+
+
+# Попытка поменять свой отзыв
+### 
+POST http://localhost:8000/api/reviews/
+Content-Type: application/json
+Authorization: Token 00b34e083af759bfad0f34932810d0401433d413
+
+{
+    "product_id": 16,
     "text": "Спасибо тебе, Наташа, за классный товар. Умнее я не стал, но припекать перестало.",
     "stars": 5
 }

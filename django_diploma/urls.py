@@ -20,10 +20,10 @@ from shop.views import OrderViewSet, ProductViewSet, CollectionViewSet, ReviewVi
 
 router = DefaultRouter()
 
-router.register(r'orders', OrderViewSet, basename='api')
-router.register(r'products', ProductViewSet, basename='api')
-router.register(r'collections', CollectionViewSet, basename='api')
-router.register(r'reviews', ReviewViewSet, basename='api')
+router.register('orders', OrderViewSet, basename='orders')
+router.register('products', ProductViewSet, basename='products')
+router.register('collections', CollectionViewSet, basename='collections')
+router.register('reviews', ReviewViewSet, basename='reviews')
 
 urlpatterns = [
     path('api/', include(router.urls)),

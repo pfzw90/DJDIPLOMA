@@ -16,7 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     name = serializers.CharField(max_length=100)
     description = serializers.CharField(max_length=5000)
-    price = serializers.DecimalField(max_digits=200, decimal_places=2)
+    price = serializers.IntegerField()
 
     class Meta:
         model = Product
@@ -46,7 +46,7 @@ class ProductReviewSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         product_id = self.context['request'].data.get('product_id')
 
-        if ProductReview.objects.filter(user=user, product_id=product_id):
+        if self.context['request'].method == 'POST' and ProductReview.objects.filter(user=user, product_id=product_id):
             raise serializers.ValidationError("У Вас уже есть отзыв по данному товару")
 
         return data
@@ -92,7 +92,6 @@ class OrderSerializer(serializers.ModelSerializer):
 
             self.create_new_products_orders(order, products_data)
 
-        order.status = validated_data.pop('status')
         order.save()
         return order
 

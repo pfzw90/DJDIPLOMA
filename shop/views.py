@@ -9,7 +9,7 @@ from shop.serializers import ProductSerializer, OrderSerializer, ProductReviewSe
 from shop.filters import OrderFilter, ReviewFilter, ProductFilter
 
 
-@permission_classes([OnlyAdminCanEdit, IsAuthenticated])
+@permission_classes([OnlyAdminCanEdit])
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -21,7 +21,7 @@ class ProductViewSet(ModelViewSet):
 
     def get_permissions(self):
         if self.action in ["create", "update", "partial_update"]:
-            return [OnlyAdminCanEdit(), IsAuthenticated()]
+            return [OnlyAdminCanEdit()]
         return []
 
 

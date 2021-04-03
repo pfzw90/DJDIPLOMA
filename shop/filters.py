@@ -6,12 +6,13 @@ from shop.models import Order, ProductReview, Product, ProductsOrders
 
 
 class ProductFilter(filters.FilterSet):
+
+    name = filters.CharFilter(field_name='name', lookup_expr='icontains')
+    description = filters.CharFilter(field_name='description', lookup_expr='icontains')
+
     class Meta:
         model = Product
-        fields = {
-            'name': ['contains'],
-            'description': ['contains'],
-        }
+        fields = ['name', 'description']
 
 
 class ReviewFilter(filters.FilterSet):
@@ -29,9 +30,8 @@ class OrderFilter(filters.FilterSet):
     created_at = filters.DateFromToRangeFilter(field_name='created_at')
     updated_at = filters.DateFromToRangeFilter(field_name='updated_at')
 
-    product_id = filters.ModelMultipleChoiceFilter(field_name='order_products', to_field_name='product_id',
-                                                       queryset=ProductsOrders.objects.select_related('product'))
+    product_id = filters.ModelMultipleChoiceFilter(field_name='products', queryset=Product.objects.all())
 
     class Meta:
         model = Order
-        fields = ['order_products', 'total', 'created_at', 'updated_at', 'status', 'product_id']
+        fields = ['products', 'total', 'created_at', 'updated_at', 'status', 'product_id']

@@ -13,7 +13,7 @@ class Basic(models.Model):
 class Product(Basic):
     name = models.TextField(verbose_name='Название товара')
     description = models.TextField(verbose_name='Описание товара')
-    price = models.IntegerField(verbose_name='Цена')
+    price = models.PositiveIntegerField(verbose_name='Цена')
 
     def __str__(self):
         return self.name
@@ -58,6 +58,7 @@ class Order(Basic):
     )
     status = models.TextField(choices=OrderStatusChoices.choices, verbose_name='Статус')
     total = models.PositiveIntegerField(blank=True, null=True)
+    products = models.ManyToManyField(Product, through='ProductsOrders', related_name='orders')
 
     def __str__(self):
         return f'Заказ №{self.id} от {self.created_at.strftime("%m/%d/%Y")}'
