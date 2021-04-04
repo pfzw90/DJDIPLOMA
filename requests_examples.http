@@ -52,6 +52,18 @@ Authorization: Token 00b34e083af759bfad0f34932810d0401433d413
     "price": 40000
 }
 
+# Создание новой коллекции
+###
+POST http://localhost:8000/api/collections/
+Content-Type: application/json
+Authorization: Token 54926bbd1248f690efdd8f7372ce7e1b64a8ea79
+
+{
+    "text" : "Тест",
+    "heading" : "Тестовое описание",
+    "products": [1,10]
+}
+
 
 # Создание нового заказа
 ###
@@ -102,10 +114,10 @@ Authorization: Token 00b34e083af759bfad0f34932810d0401433d413
 ### 
 POST http://localhost:8000/api/reviews/
 Content-Type: application/json
-Authorization: Token 00b34e083af759bfad0f34932810d0401433d413
+Authorization: Token 54926bbd1248f690efdd8f7372ce7e1b64a8ea79
 
 {
-    "product_id": 16,
+    "product_id": 17,
     "text": "Спасибо тебе, Наташа, за классный товар. Умнее я не стал, но припекать перестало.",
     "stars": 5
 }
@@ -117,7 +129,7 @@ Content-Type: application/json
 Authorization: Token 00b34e083af759bfad0f34932810d0401433d413
 
 {
-    "product_id": 16,
+    "product_id": 17,
     "text": "Спасибо тебе, Наташа, за классный товар. Умнее я не стал, но припекать перестало.",
     "stars": 5
 }
