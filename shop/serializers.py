@@ -1,5 +1,3 @@
-from decimal import Decimal
-
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
@@ -109,7 +107,7 @@ class OrderSerializer(serializers.ModelSerializer):
 class CollectionSerializer(serializers.ModelSerializer):
     heading = serializers.CharField(max_length=50)
     text = serializers.CharField(max_length=1000)
-    products = ProductSerializer(many=True)
+    products = serializers.PrimaryKeyRelatedField(many=True, queryset=Product.objects.all())
 
     class Meta:
         model = Collection
@@ -118,3 +116,4 @@ class CollectionSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         return data
+
